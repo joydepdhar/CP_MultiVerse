@@ -2,31 +2,31 @@ class Solution {
 public:
     vector<int> findMissingAndRepeatedValues(vector<vector<int>>& grid) {
         int n = grid.size();
-        int size = n * n;
-        vector<int> freq(size + 1, 0);
+        long long N = n * n;
         
-        int repeated = -1, missing = -1;
-        int actualSum = 0, expectedSum = (size * (size + 1)) / 2;
+        // Expected sums
+        long long sum_expected = (N * (N + 1)) / 2;
+        long long sum_square_expected = (N * (N + 1) * (2 * N + 1)) / 6;
 
-        // Flatten matrix and track frequency
+        // Actual sums
+        long long sum_actual = 0, sum_square_actual = 0;
+
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 int num = grid[i][j];
-                actualSum += num;
-                freq[num]++;
-                if (freq[num] == 2) {
-                    repeated = num;
-                }
+                sum_actual += num;
+                sum_square_actual += (long long) num * num;
             }
         }
 
-        // Find the missing number
-        for (int i = 1; i <= size; i++) {
-            if (freq[i] == 0) {
-                missing = i;
-                break;
-            }
-        }
+        // Equations:
+        long long diff = sum_actual - sum_expected;  // (Repeated - Missing)
+        long long square_diff = sum_square_actual - sum_square_expected;  // (Repeated^2 - Missing^2)
+
+        long long sum = square_diff / diff;  // (Repeated + Missing)
+
+        int repeated = (diff + sum) / 2;
+        int missing = sum - repeated;
 
         return {repeated, missing};
     }
